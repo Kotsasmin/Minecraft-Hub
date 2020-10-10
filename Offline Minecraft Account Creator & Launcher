@@ -1,0 +1,159 @@
+:start_code
+@ECHO OFF
+title Offline Minecraft Account Creator & Launcher
+echo Please wait...
+SET "MC_DIR=%APPDATA%\.minecraft\Minecraft.exe"
+SET "SYSDIR=%SystemRoot%\System32"
+SET "ATTRIB=!SYSDIR!\ATTRIB.EXE"
+SET "SETTINGS=%APPDATA%\.minecraft\launcher_settings.json"
+SET "PROFILES=%APPDATA%\.minecraft\launcher_profiles.json"
+SET "PROFILE_ENTRY=added by Kotsasmin's launcher | don't modify"
+SET UUID=00000000000000000000000000000000
+SET JQ=jq-win32.exe
+SET JQ_FILE=https://github.com/Kotsasmin/Minecraft-launcher-data/blob/master/jq-win32.exe?raw=true
+if not exist %APPDATA%\.minecraft mkdir %APPDATA%\.minecraft
+if exist debug.log del debug.log
+:begin
+cls
+echo Please wait...
+set data=begin
+if not exist jq-win32.exe goto download_jq
+if not exist %APPDATA%\.minecraft\Minecraft.exe goto download_mc
+if not exist "%ProgramFiles(x86)%\Java" goto download_java
+if not exist %PROFILES% goto readd
+:menu
+if exist debug.log del debug.log
+cls
+echo  ---------------------------------------------------------------------------------------------
+echo  --------------------------Offline Minecraft Account Creator Launcher-------------------------
+echo  ---------------------------------------------------------------------------------------------
+echo                                                                                   by Kotsasmin
+echo.
+echo                                                                 based on Copyiright's launcher
+echo.
+echo.
+echo.
+echo.
+echo 1) Launch the Minecraft Launcher
+echo 2) Add cracked player
+echo 3) Open Copyiright's website
+echo 4) Open Kotsasmin's website
+echo 5) Exit
+choice /c 12345 /n /m " "
+if %errorlevel%==1 (goto launch)
+if %errorlevel%==2 (goto add)
+if %errorlevel%==3 (goto web)
+if %errorlevel%==4 (goto web_kotsasmin)
+if %errorlevel%==5 (exit)
+:web_kotsasmin
+cls
+echo Opening: Kotsasmin's website
+start https://kotsasmin.blogspot.com
+if exist debug.log del debug.log
+goto menu
+:add
+cls
+SET /P name="Username: "
+cls
+echo Adding username...
+SETLOCAL EnableExtensions EnableDelayedExpansion
+SET "MC_DIR=%APPDATA%\.minecraft\Minecraft.exe"
+SET "SYSDIR=%SystemRoot%\System32"
+SET "ATTRIB=!SYSDIR!\ATTRIB.EXE"
+SET "SETTINGS=%APPDATA%\.minecraft\launcher_settings.json"
+SET "PROFILES=%APPDATA%\.minecraft\launcher_profiles.json"
+SET "PROFILE_ENTRY=added by Kotsasmin's launcher | don't modify"
+SET UUID=00000000000000000000000000000000
+SET JQ=jq-win32.exe
+SET JQ_FILE=https://github.com/Kotsasmin/Minecraft-launcher-data/blob/master/jq-win32.exe?raw=true
+"!ATTRIB!" -R -S -H "!PROFILES!">NUL 2>&1
+"!ATTRIB!" -R -S -H "!PROFILES:~,-5!">NUL 2>&1
+
+SET "OUTPUT="
+FOR /F "delims=" %%I in ('2^>NUL TYPE "!PROFILES!" ^| "!JQ!" -r ".authenticationDatabase|select(.^!=null)" 2^>NUL') do SET OUTPUT=%%I
+IF "!OUTPUT!"=="" ECHO {}>"!PROFILES!" 2>NUL
+TYPE "!PROFILES!" | "!JQ!" ".authenticationDatabase+={\"!name!\":{\"accessToken\":\"\",\"profiles\":{\"!UUID!\":{\"displayName\":\"!name!\"}},\"username\":\"!PROFILE_ENTRY!\"}}">"!PROFILES:~,-5!" 2>NUL
+DEL "!PROFILES!">NUL 2>&1
+REN "!PROFILES:~,-5!" "launcher_profiles.json">NUL 2>&1
+goto menu
+:start
+SETLOCAL EnableExtensions EnableDelayedExpansion
+SET "MC_DIR=%APPDATA%\.minecraft\Minecraft.exe"
+SET "SYSDIR=%SystemRoot%\System32"
+SET "ATTRIB=!SYSDIR!\ATTRIB.EXE"
+SET "SETTINGS=%APPDATA%\.minecraft\launcher_settings.json"
+SET "PROFILES=%APPDATA%\.minecraft\launcher_profiles.json"
+SET "PROFILE_ENTRY=added by Kotsasmin's launcher | don't modify"
+SET UUID=00000000000000000000000000000000
+SET JQ=jq-win32.exe
+SET JQ_FILE=https://github.com/Kotsasmin/Minecraft-launcher-data/blob/master/jq-win32.exe?raw=true
+set data=start
+if not exist jq-win32.exe goto download_jq
+if not exist %APPDATA%\.minecraft\Minecraft.exe goto download_mc
+if not exist "%ProgramFiles(x86)%\Java" goto download_java
+"!ATTRIB!" -R -S -H "!PROFILES!">NUL 2>&1
+"!ATTRIB!" -R -S -H "!PROFILES:~,-5!">NUL 2>&1
+SET "OUTPUT="
+FOR /F "delims=" %%I in ('2^>NUL TYPE "!PROFILES!" ^| "!JQ!" -r ".authenticationDatabase|select(.^!=null)" 2^>NUL') do SET OUTPUT=%%I
+IF "!OUTPUT!"=="" ECHO {}>"!PROFILES!" 2>NUL
+TYPE "!PROFILES!" | "!JQ!" ".authenticationDatabase+={\"!name!\":{\"accessToken\":\"\",\"profiles\":{\"!UUID!\":{\"displayName\":\"!name!\"}},\"username\":\"!PROFILE_ENTRY!\"}}">"!PROFILES:~,-5!" 2>NUL
+DEL "!PROFILES!">NUL 2>&1
+REN "!PROFILES:~,-5!" "launcher_profiles.json">NUL 2>&1
+goto launch
+:launch
+if exist debug.log del debug.log
+cls
+echo Launching...
+if exist %MC_DIR% start %MC_DIR%
+exit
+:download_jq
+echo.
+echo Downloading jq
+curl -o jq-win32.exe "https://github.com/Kotsasmin/Minecraft-launcher-data/blob/master/jq-win32.exe?raw=true" -L -s
+cls
+goto %data%
+
+:download_mc
+echo.
+echo Downloading Minecraft Launcher
+curl -o %APPDATA%\.minecraft\Minecraft.exe "https://launcher.mojang.com/download/Minecraft.exe" -L -s
+cls
+goto %data%
+:download_java
+echo.
+echo Downloading Java
+curl -o Java.exe "https://javadl.oracle.com/webapps/download/AutoDL?BundleId=242959_a4634525489241b9a9e1aa73d9e118e6" -L -s
+cls
+goto %data%
+:web
+cls
+echo Opening: Copyiright's website
+start https://www.playfreeminecraft.nl/
+if exist debug.log del debug.log
+goto menu
+:readd
+cls
+echo Please type your username below:
+echo.
+SET /P name="Username: "
+cls
+echo Adding username...
+SETLOCAL EnableExtensions EnableDelayedExpansion
+SET "MC_DIR=%APPDATA%\.minecraft\Minecraft.exe"
+SET "SYSDIR=%SystemRoot%\System32"
+SET "ATTRIB=!SYSDIR!\ATTRIB.EXE"
+SET "SETTINGS=%APPDATA%\.minecraft\launcher_settings.json"
+SET "PROFILES=%APPDATA%\.minecraft\launcher_profiles.json"
+SET "PROFILE_ENTRY=added by Kotsasmin's launcher | don't modify"
+SET UUID=00000000000000000000000000000000
+SET JQ=jq-win32.exe
+SET JQ_FILE=https://github.com/Kotsasmin/Minecraft-launcher-data/blob/master/jq-win32.exe?raw=true
+"!ATTRIB!" -R -S -H "!PROFILES!">NUL 2>&1
+"!ATTRIB!" -R -S -H "!PROFILES:~,-5!">NUL 2>&1
+SET "OUTPUT="
+FOR /F "delims=" %%I in ('2^>NUL TYPE "!PROFILES!" ^| "!JQ!" -r ".authenticationDatabase|select(.^!=null)" 2^>NUL') do SET OUTPUT=%%I
+IF "!OUTPUT!"=="" ECHO {}>"!PROFILES!" 2>NUL
+TYPE "!PROFILES!" | "!JQ!" ".authenticationDatabase+={\"!name!\":{\"accessToken\":\"\",\"profiles\":{\"!UUID!\":{\"displayName\":\"!name!\"}},\"username\":\"!PROFILE_ENTRY!\"}}">"!PROFILES:~,-5!" 2>NUL
+DEL "!PROFILES!">NUL 2>&1
+REN "!PROFILES:~,-5!" "launcher_profiles.json">NUL 2>&1
+goto start_code
